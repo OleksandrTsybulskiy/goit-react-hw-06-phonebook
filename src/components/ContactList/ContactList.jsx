@@ -1,12 +1,10 @@
 import { ContactListItem } from '../ContactListItem/ContactListItem';
 import { List } from './ContactList.styled';
 
-export const ContactList = ({filteredContacts, onDelete}) => {
+export const ContactList = () => {
   return (
-      <List>
-        {filteredContacts.map(contact => (
-          <ContactListItem key={contact.id} contact={contact} onDelete={onDelete}/>
-        ))}
-      </List>
+    <List>
+      <ContactListItem />
+    </List>
   );
 };

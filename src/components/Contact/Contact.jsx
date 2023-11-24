@@ -1,7 +1,9 @@
 import * as Yup from 'yup';
-import { Formik, Field} from 'formik';
+import { Formik, Field } from 'formik';
 import { Button, FormStyled } from './Contact.styled';
-
+import { useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
+import { addContact } from 'redux/contactsSlice';
 
 const FormValidSchema = Yup.object().shape({
   name: Yup.string()
@@ -15,11 +17,26 @@ const FormValidSchema = Yup.object().shape({
   number: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
-    .matches(/\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/, "Phone number must be digits and can contain spaces, dashes, parentheses and can start with +")
+    .matches(
+      /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/,
+      'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +'
+    )
     .required('Required'),
 });
 
-export const ContactForm = ({ addContact }) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+
+  const handleSubmit = ({ name, number }) => {
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
+    dispatch(addContact(newContact));
+  };
+
   return (
     <Formik
       initialValues={{
@@ -27,24 +44,13 @@ export const ContactForm = ({ addContact }) => {
         number: '',
       }}
       validationSchema={FormValidSchema}
-      onSubmit={values => {
-        addContact(values);
-
-        values.name = '';
-        values.number = '';
-      }}
+      onSubmit={handleSubmit}
     >
       <FormStyled>
         <label htmlFor="Name">Name</label>
-        <Field
-          type="text"
-          name="name"
-        />
+        <Field type="text" name="name" />
         <label htmlFor="Number">Number</label>
-        <Field
-          type="tel"
-          name="number"
-        />
+        <Field type="tel" name="number" />
         <Button type="submit">Add contact</Button>
       </FormStyled>
     </Formik>
